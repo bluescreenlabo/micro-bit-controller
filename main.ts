@@ -36,7 +36,7 @@ function ButtonInfo () {
     }
     return buttonNum
 }
-let base_angle = 0
+let baseAngle = 0
 let magnitude = 0
 let inputY = 0
 let inputX = 0
@@ -48,8 +48,32 @@ basic.forever(function () {
     inputY = Math.map(pins.analogReadPin(AnalogPin.P1), 0, 1023, -1, 1)
     magnitude = Math.sqrt(inputX * inputX + inputY * inputY)
     magnitude = Math.min(magnitude, 1)
-    base_angle = Math.atan2(inputY, inputX)
+    baseAngle = Math.atan2(inputX, inputY)
     radio.sendValue("mag", magnitude)
-    radio.sendValue("ban", base_angle)
+    radio.sendValue("ban", baseAngle)
     radio.sendValue("btn", ButtonInfo())
+})
+loops.everyInterval(100, function () {
+    basic.pause(100)
+    if (magnitude > 0.05) {
+        dispDirection(baseAngle)
+    } else if (buttonNum == 2) {
+        basic.showLeds(`
+            . . # . .
+            . . . # .
+            . # # # #
+            # . . # .
+            # . # . .
+            `)
+    } else if (buttonNum == 4) {
+        basic.showLeds(`
+            . . # . .
+            . # . . .
+            # # # # .
+            . # . . #
+            . . # . #
+            `)
+    } else {
+        basic.clearScreen()
+    }
 })
